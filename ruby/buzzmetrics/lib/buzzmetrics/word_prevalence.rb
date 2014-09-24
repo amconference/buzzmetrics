@@ -23,7 +23,7 @@ module Buzzmetrics
   # The final score is a rough metric for "rareness of words used"
   def score_title title
     freq_list = read_word_frequency
-    t = title
+    title
       .split
       .map{|word| score_for_frequency freq_list[word.downcase]}
       .inject(:+)
