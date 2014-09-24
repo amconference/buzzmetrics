@@ -1,1 +1,22 @@
 require "bundler/gem_tasks"
+
+#
+# See notes in data/README.md about naming conventions
+#
+# Example:
+#
+# rake run[../../data/altmetric/sample.csv,../../data/out/altmetric/sample]
+#
+task :run, [:origin, :destin] do |t, args|
+  require 'buzzmetrics'
+  include Buzzmetrics
+
+  fail "need origin arg" unless args[:origin]
+  fail "need destin arg" unless args[:destin]
+
+  fail "destin arg must be a directory" unless Dir.exists?(args[:destin])
+
+  input_csv = File.read(args[:origin])
+
+  question_mark input_csv, File.join(args[:destin], 'question_marks.csv')
+end
