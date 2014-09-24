@@ -7,8 +7,6 @@ import json
 import urllib2
 from time import sleep
 
-import nwutil
-
 
 # read API key from environment variable
 API_KEY = os.environ['ALTMETRIC_API_KEY']
@@ -16,7 +14,6 @@ ALTMETRIC_BASE = 'http://api.altmetric.com/v1'
 
 SLEEP_SECONDS = 0  # sleep between API calss
 RETRY_SECONDS = 10  # sleep before retying a failed fetch
-MAX_REQUESTS = 100
 
 TIME_PERIODS = \
 	['at', '1d', '2d', '3d', '4d', '5d', '6d', '1w', '1m', '3m', '1y']
@@ -52,7 +49,6 @@ def fetch(time_period, output_dir, num_results=1000, fetch_all=False):
 				if res_total % num_results:
 					max_page += 1
 				pages = range(page_num + 1, min(max_page + 1, MAX_REQUESTS))
-			print 'pages:', pages
 		else:
 			current = json.loads(res)
 			output['results'].extend(current['results'])
@@ -92,6 +88,5 @@ if __name__ == '__main__':
 
 	time_period = sys.argv[1]
 	output_dir = sys.argv[2]
-	num_results = int(sys.argv[3]) if len(sys.argv) >= 4 else None
 
 	fetch(time_period, output_dir, fetch_all=True)
