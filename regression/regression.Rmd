@@ -5,6 +5,11 @@ date: "24 September 2014"
 output: html_document
 ---
 
+Packages:
+
+install.packages('data.table')
+install.packages('ggplot2')
+
 Some preliminaries...
 
 ```{r}
@@ -42,6 +47,8 @@ colons$colons <- factor(colons$colons)
 titleLengths <- readDataFileWithDOI(outFilePath('title_lengths.csv'))
 titleLengths <- data.table(doi = titleLengths$doi,
                            title_length = titleLengths$length)
+
+wordPrevalence <- readDataFileWithDOI(outFilePath('word_prevalence.csv'))
 ```
 
 Go from publication date to an age in weeks, which is a bit easier to interpret:
@@ -60,6 +67,7 @@ data <- titles
 data <- data[questionMarks]
 data <- data[colons]
 data <- data[titleLengths]
+data <- data[wordPrevalence]
 ```
 
 Summary table:
@@ -81,10 +89,15 @@ ggplot(meltedData) + geom_point(aes(x=age_weeks, y=log(score))) + facet_grid(var
 ggplot(data) + geom_point(aes(x=age_weeks, y=log(score), color=title_length))
 ```
 
+```{r, echo=FALSE}
+ggplot(data) + geom_point(aes(x=age_weeks, y=log(score), color=word_prevalence_score))
+```
+
 The simplest regression that could possibly work:
 
 ```{r}
-bigLm <- lm(score ~ age_weeks + question_marks + colons + title_length,
+bigLm <- lm(score ~ age_weeks + question_marks + colons + title_length +
+              word_prevalence_score,
             data=data)
 print(summary(bigLm))
 ```
