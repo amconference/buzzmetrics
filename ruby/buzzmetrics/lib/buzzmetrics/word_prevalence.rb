@@ -8,6 +8,11 @@ module Buzzmetrics
     end
     Hash[frequency_list]
   end
+
+  def is_initialism word
+    word == word.upcase && word.delete('.').length > 1
+  end
+
   def score_for_frequency freq
     # There is no rhyme or reason to these figures
     return  0 if freq.nil? # dictionary miss
@@ -20,13 +25,29 @@ module Buzzmetrics
     return  5
   end
 
+  def sanitize word
+    return word if is_initialism(word)
+    word.downcase.gsub(/[,:\.!\?]+$/, '') # strip trailing punctuation
+  end
+
   # very common words count negatively. Rarer words count more the rarer they are.
   # The final score is a rough metric for "rareness of words used"
   def score_title title, freq_list
     title
       .split
-      .map{|word| score_for_frequency freq_list[word.downcase]}
+      .map{|word| is_initialism(word) ? 4 : score_for_frequency(freq_list[sanitize word])}
       .inject(:+)
+  end
+  def has_initialism input_csv, output_path
+    freq_list = read_word_frequency
+    records = CSV.parse input_csv, headers: true
+    CSV.open(output_path, "wb") do |csv|
+      csv << %w[ doi has_initialism ]
+      records.each do |record|
+        bool = record['title'].split.any?{|word| is_initialism word }
+        csv << [ record['doi'], bool ? 1 : 0 ]
+      end
+    end
   end
   def word_prevalence input_csv, output_path
     freq_list = read_word_frequency

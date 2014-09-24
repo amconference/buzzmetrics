@@ -28,7 +28,7 @@ task :run, [:origin, :destin] do |t, args|
   question_mark input_csv, File.join(args[:destin], 'question_marks.csv')
   colons input_csv, File.join(args[:destin], 'colons.csv')
   word_prevalence input_csv, File.join(args[:destin], 'word_prevalence.csv')
-
+  has_initialism input_csv, File.join(args[:destin], 'has_initialism.csv')
   ["title_lengths_csv", "average_word_length", "median_word_length"].each do |metric|
     Buzzmetrics.send(metric, input_csv, File.join(args[:destin], metric + ".csv"))
   end
