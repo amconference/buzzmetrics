@@ -3,10 +3,16 @@ require "bundler/gem_tasks"
 #
 # See notes in data/README.md about naming conventions
 #
-# Example:
+# Examples:
 #
 # mkdir -p ../../data/out/altmetric/sample
 # rake run[../../data/altmetric/sample.csv,../../data/out/altmetric/sample]
+#
+# mkdir -p ../../data/out/altmetric/1d-2014-09-24
+# rake run[../../data/altmetric/1d-2014-09-24.csv,../../data/out/altmetric/1d-2014-09-24]
+#
+# mkdir -p ../../data/out/altmetric/1m-partial-2014-09-24
+# rake run[../../data/altmetric/1m-partial-2014-09-24.csv,../../data/out/altmetric/1m-partial-2014-09-24]
 #
 task :run, [:origin, :destin] do |t, args|
   require 'buzzmetrics'
