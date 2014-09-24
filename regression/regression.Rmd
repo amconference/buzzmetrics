@@ -33,8 +33,8 @@ readDataFileWithDOI <- function(fileName) {
 Load data from the various feature files:
 
 ```{r}
-#dataStem <- file.path('altmetric','1d-2014-09-24')
-dataStem <- file.path('altmetric','1m-partial-2014-09-24')
+dataStem <- file.path('altmetric','1d-2014-09-24')
+#dataStem <- file.path('altmetric','1m-partial-2014-09-24')
 outFilePath <- function(fileName) { file.path('out', dataStem, fileName) }
 
 titles <- readDataFileWithDOI(paste0(dataStem, '.csv'))
@@ -53,6 +53,9 @@ wordPrevalence <- readDataFileWithDOI(outFilePath('word_prevalence.csv'))
 
 averageWordLength <- readDataFileWithDOI(outFilePath('average_word_length.csv'))
 medianWordLength <- readDataFileWithDOI(outFilePath('median_word_length.csv'))
+
+hasInitialism <- readDataFileWithDOI(outFilePath('has_initialism.csv'))
+hasInitialism$has_initialism <- factor(hasInitialism$has_initialism)
 
 adjective <- readDataFileWithDOI(outFilePath('adjective.csv'))
 adjective <- adjective[,c('doi','adjective_count','total_words'),with=FALSE]
@@ -87,6 +90,7 @@ data <- data[titleLengths]
 data <- data[wordPrevalence]
 data <- data[averageWordLength]
 data <- data[medianWordLength]
+data <- data[hasInitialism]
 data <- data[adjective]
 data <- data[adverb]
 data <- data[noun]
@@ -147,7 +151,7 @@ It does indeed fit a bit better ($R^2$ is higher).
 bigLm <- lm(score ~ age_weeks + question_marks + colons + title_length +
               word_prevalence_score + adjective_count + adverb_count +
               noun_count + preposition_count + pronoun_count + total_words +
-              average_word_length + median_word_length,
+              average_word_length + median_word_length + has_initialism,
             data=data)
 print(summary(bigLm))
 ```
@@ -156,7 +160,7 @@ print(summary(bigLm))
 bigLm <- lm(log(score) ~ age_weeks + question_marks + colons + title_length +
               word_prevalence_score + adjective_count + adverb_count +
               noun_count + preposition_count + pronoun_count + total_words +
-              average_word_length + median_word_length,
+              average_word_length + median_word_length + has_initialism,
             data=data)
 print(summary(bigLm))
 print(exp(bigLm$coefficients))
