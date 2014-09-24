@@ -29,7 +29,11 @@ def parse_entry(res):
 		nlm_id = None
 	doi = res.get('doi', None)
 	title = clean_title(res.get('title'))
-	pub_date = convert_date(res.get('published_on'))
+	try:
+		pub_date = convert_date(res.get('published_on'))
+	except ValueError:
+		print 'Invalid date, ignoring entry:', res.get('published_on')
+		return
 	score = str(res.get('score', 0.0))
 	mendeley = str(res['readers'].get('mendeley', 0))
 	tweets = str(res.get('cited_by_tweeters_count', 0))
