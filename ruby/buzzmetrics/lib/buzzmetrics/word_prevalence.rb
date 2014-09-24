@@ -21,19 +21,19 @@ module Buzzmetrics
 
   # very common words count negatively. Rarer words count more the rarer they are.
   # The final score is a rough metric for "rareness of words used"
-  def score_title title
-    freq_list = read_word_frequency
+  def score_title title, freq_list
     title
       .split
       .map{|word| score_for_frequency freq_list[word.downcase]}
       .inject(:+)
   end
   def word_prevalence input_csv, output_path
+    freq_list = read_word_frequency
     records = CSV.parse input_csv, headers: true
     CSV.open(output_path, "wb") do |csv|
       csv << %w[ doi word_prevalence_score ]
       records.each do |record|
-        csv << [ record['doi'], score_title(record['title']) ]
+        csv << [ record['doi'], score_title(record['title'], freq_list) ]
       end
     end
   end
