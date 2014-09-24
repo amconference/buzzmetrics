@@ -54,7 +54,9 @@ module Buzzmetrics
       csv_out << ["doi", "average_word_length"]
       words_in_title(input_csv).each do |entry|
         total_length = entry[:words].map { |w| w.size }.reduce(0, &:+)
-        csv_out << [entry[:doi], total_length / entry[:words].size]
+        if entry[:words].size > 0
+          csv_out << [entry[:doi], total_length / entry[:words].size]
+        end
       end
     end
   end
