@@ -33,7 +33,8 @@ readDataFileWithDOI <- function(fileName) {
 Load data from the various feature files:
 
 ```{r}
-dataStem <- file.path('altmetric','1d-2014-09-24')
+#dataStem <- file.path('altmetric','1d-2014-09-24')
+dataStem <- file.path('altmetric','1m-partial-2014-09-24')
 outFilePath <- function(fileName) { file.path('out', dataStem, fileName) }
 
 titles <- readDataFileWithDOI(paste0(dataStem, '.csv'))
@@ -101,3 +102,15 @@ bigLm <- lm(score ~ age_weeks + question_marks + colons + title_length +
             data=data)
 print(summary(bigLm))
 ```
+
+The $R^2$ is very low. Let's have a look at $\log(score)$ to see if it fits better.
+
+```{r}
+bigLm <- lm(log(score) ~ age_weeks + question_marks + colons + title_length +
+              word_prevalence_score,
+            data=data)
+print(summary(bigLm))
+print(exp(bigLm$coefficients))
+```
+
+It does indeed fit a bit better ($R^2$ is higher).
