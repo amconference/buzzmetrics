@@ -50,6 +50,22 @@ titleLengths <- data.table(doi = titleLengths$doi,
                            title_length = titleLengths$length)
 
 wordPrevalence <- readDataFileWithDOI(outFilePath('word_prevalence.csv'))
+
+averageWordLength <- readDataFileWithDOI(outFilePath('average_word_length.csv'))
+medianWordLength <- readDataFileWithDOI(outFilePath('median_word_length.csv'))
+
+adjective <- readDataFileWithDOI(outFilePath('adjective.csv'))
+adjective <- adjective[,c('doi','adjective_count','total_words'),with=FALSE]
+adverb <- readDataFileWithDOI(outFilePath('adverb.csv'))
+adverb <- adverb[,c('doi','adverb_count'),with=FALSE]
+noun <- readDataFileWithDOI(outFilePath('noun.csv'))
+noun <- noun[,c('doi','noun_count'),with=FALSE]
+preposition <- readDataFileWithDOI(outFilePath('preposition.csv'))
+preposition <- preposition[,c('doi','preposition_count'),with=FALSE]
+pronoun <- readDataFileWithDOI(outFilePath('pronoun.csv'))
+pronoun <- pronoun[,c('doi','pronoun_count'),with=FALSE]
+verb <- readDataFileWithDOI(outFilePath('verb.csv'))
+verb <- verb[,c('doi','verb_count'),with=FALSE]
 ```
 
 Go from publication date to an age in weeks, which is a bit easier to interpret:
@@ -69,6 +85,14 @@ data <- data[questionMarks]
 data <- data[colons]
 data <- data[titleLengths]
 data <- data[wordPrevalence]
+data <- data[averageWordLength]
+data <- data[medianWordLength]
+data <- data[adjective]
+data <- data[adverb]
+data <- data[noun]
+data <- data[preposition]
+data <- data[pronoun]
+data <- data[verb]
 ```
 
 Summary table:
@@ -77,40 +101,74 @@ Summary table:
 print(summary(data))
 ```
 
-Some simple plots:
+Some simple plots (none very helpful):
 
 ```{r, echo=FALSE}
-meltedData <- melt(data[,c('doi', 'age_weeks', 'score', 'question_marks',
-                           'colons'), with=FALSE],
-                   id=c('doi', 'age_weeks', 'score'))
-ggplot(meltedData) + geom_point(aes(x=age_weeks, y=log(score))) + facet_grid(variable ~ value)
+#meltedData <- melt(data[,c('doi', 'age_weeks', 'score', 'question_marks',
+#                           'colons'), with=FALSE],
+#                   id=c('doi', 'age_weeks', 'score'))
+#ggplot(meltedData) + geom_point(aes(x=age_weeks, y=log(score))) + facet_grid(variable ~ value)
 ```
 
 ```{r, echo=FALSE}
-ggplot(data) + geom_point(aes(x=age_weeks, y=log(score), color=title_length))
+#ggplot(data) + geom_point(aes(x=age_weeks, y=log(score), color=title_length))
 ```
 
 ```{r, echo=FALSE}
-ggplot(data) + geom_point(aes(x=age_weeks, y=log(score), color=word_prevalence_score))
+#ggplot(data) + geom_point(aes(x=age_weeks, y=log(score), color=word_prevalence_score))
 ```
+
+# Regressions
+
+## Additive with Title Length
 
 The simplest regression that could possibly work:
 
 ```{r}
-bigLm <- lm(score ~ age_weeks + question_marks + colons + title_length +
-              word_prevalence_score,
-            data=data)
-print(summary(bigLm))
+lm1 <- lm(score ~ age_weeks + question_marks + colons + title_length,
+          data=data)
+print(summary(lm1))
 ```
 
 The $R^2$ is very low. Let's have a look at $\log(score)$ to see if it fits better.
 
 ```{r}
+lm2 <- lm(log(score) ~ age_weeks + question_marks + colons + title_length,
+          data=data)
+print(summary(lm2))
+print(exp(lm2$coefficients))
+```
+
+It does indeed fit a bit better ($R^2$ is higher).
+
+## The Kitchen Sink
+
+```{r}
+bigLm <- lm(score ~ age_weeks + question_marks + colons + title_length +
+              word_prevalence_score + adjective_count + adverb_count +
+              noun_count + preposition_count + pronoun_count + total_words +
+              average_word_length + median_word_length,
+            data=data)
+print(summary(bigLm))
+```
+
+```{r}
 bigLm <- lm(log(score) ~ age_weeks + question_marks + colons + title_length +
-              word_prevalence_score,
+              word_prevalence_score + adjective_count + adverb_count +
+              noun_count + preposition_count + pronoun_count + total_words +
+              average_word_length + median_word_length,
             data=data)
 print(summary(bigLm))
 print(exp(bigLm$coefficients))
 ```
 
-It does indeed fit a bit better ($R^2$ is higher).
+## Word types
+
+```{r}
+bigLm <- lm(log(score) ~ age_weeks + question_marks + colons +
+              word_prevalence_score + adjective_count + adverb_count +
+              noun_count + preposition_count + pronoun_count + total_words,
+            data=data)
+print(summary(bigLm))
+print(exp(bigLm$coefficients))
+```
