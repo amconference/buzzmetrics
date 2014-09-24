@@ -2,6 +2,7 @@
 # encoding: utf-8
 
 import os
+import re
 import sys
 import codecs
 
@@ -15,6 +16,8 @@ POS_TAGS = {
 	'IN': 'preposition',
 	'PR': 'pronoun'
 }
+SPLIT_ON_COMMAS_NOT_INSIDE_QUOTES = re.compile(',(?=(?:[^"]|"[^"]*")*$)')
+
 
 def analyse(input_file, output_dir):
 	
@@ -25,10 +28,8 @@ def analyse(input_file, output_dir):
 
 	with codecs.open(input_file, encoding='utf-8') as f:
 		ignore_line = f.readline()
-		print 'ignore line', ignore_line
-		# TODO need to ignore commas inside quotes in split
 		for line in f:
-			cols = line.split(',')
+			cols = re.split(SPLIT_ON_COMMAS_NOT_INSIDE_QUOTES, line)
 			if len(cols) < 2:
 				continue
 			doi = cols[0]
