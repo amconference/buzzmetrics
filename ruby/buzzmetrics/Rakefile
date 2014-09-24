@@ -20,4 +20,5 @@ task :run, [:origin, :destin] do |t, args|
   input_csv = File.read(args[:origin])
 
   question_mark input_csv, File.join(args[:destin], 'question_marks.csv')
+  Buzzmetrics.title_lengths_csv input_csv, File.join(args[:destin], 'title_lengths.csv')
 end
