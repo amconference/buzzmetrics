@@ -10,6 +10,7 @@ Some preliminaries...
 ```{r}
 require(data.table)
 require(ggplot2)
+require(reshape)
 
 dataPath <- '../data'
 ```
@@ -70,7 +71,10 @@ print(summary(data))
 Some simple plots:
 
 ```{r, echo=FALSE}
-ggplot(data) + geom_point(aes(x=age_weeks, y=log(score), color=question_marks))
+meltedData <- melt(data[,c('doi', 'age_weeks', 'score', 'question_marks',
+                           'colons'), with=FALSE],
+                   id=c('doi', 'age_weeks', 'score'))
+ggplot(meltedData) + geom_point(aes(x=age_weeks, y=log(score))) + facet_grid(variable ~ value)
 ```
 
 ```{r, echo=FALSE}
