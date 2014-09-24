@@ -5,6 +5,11 @@ date: "24 September 2014"
 output: html_document
 ---
 
+Packages:
+
+install.packages('data.table')
+install.packages('ggplot2')
+
 Some preliminaries...
 
 ```{r}
