@@ -5,18 +5,48 @@ date: "24 September 2014"
 output: html_document
 ---
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Some preliminaries...
 
 ```{r}
-summary(cars)
+require(data.table)
+require(ggplot2)
+
+dataPath <- '../data/toy'
 ```
 
-You can also embed plots, for example:
+Helper to read a CSV file in the data path keyed by DOI:
+
+```{r}
+readDataFileWithDOI <- function(fileName) {
+  table <- fread(file.path(dataPath, fileName))
+  setkey(table, 'doi')
+  table
+}
+```
+
+Load data from the various feature files:
+
+```{r}
+titles <- readDataFileWithDOI('titles.csv')
+questionMarks <- readDataFileWithDOI('question_marks.csv')
+```
+
+Merge everything together on DOI:
+
+```{r}
+data <- titles
+data <- data[questionMarks]
+```
+
+The simplest plot that could possibly work:
 
 ```{r, echo=FALSE}
-plot(cars)
+ggplot(data) + geom_point(aes(x=1, y=score, color=question_marks))
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+The simplest regression that could possibly work:
+
+```{r}
+lmQuestionMarks <- lm(score ~ question_marks, data=data)
+print(lmQuestionMarks)
+```
