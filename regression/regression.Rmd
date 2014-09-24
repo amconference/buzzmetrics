@@ -18,7 +18,7 @@ Helper to read a CSV file in the data path keyed by DOI:
 
 ```{r}
 readDataFileWithDOI <- function(fileName) {
-  table <- fread(file.path(dataPath, fileName))
+  table <- data.table(read.csv(file.path(dataPath, fileName), header=TRUE))
   setkey(table, 'doi')
   table
 }
