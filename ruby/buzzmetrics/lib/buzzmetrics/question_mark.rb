@@ -1,8 +1,8 @@
 module Buzzmetrics
   require 'csv'
-  def question_mark csv
-    records = CSV.parse csv, headers: true
-    CSV.open("../../../../data/out/question_mark.csv", "wb") do |csv|
+  def question_mark input_csv, output_path
+    records = CSV.parse input_csv, headers: true
+    CSV.open(output_path, "wb") do |csv|
       csv << %w[ doi question_marks ]
       records.each do |record|
         has_question = record['title'].include?('?') ? 1 : 0
