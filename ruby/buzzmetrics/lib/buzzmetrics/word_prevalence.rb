@@ -16,6 +16,7 @@ module Buzzmetrics
     return  2 if freq >=  50_000
     return  3 if freq >=  25_000
     return  4 if freq >=   5_000
+    return  0 if freq ==       1 # there is a lot of noise in the wordlist, seemingly from typos
     return  5
   end
 
