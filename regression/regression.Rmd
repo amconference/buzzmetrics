@@ -11,7 +11,7 @@ Some preliminaries...
 require(data.table)
 require(ggplot2)
 
-dataPath <- '../data/toy'
+dataPath <- '../data'
 ```
 
 Helper to read a CSV file in the data path keyed by DOI:
@@ -27,17 +27,17 @@ readDataFileWithDOI <- function(fileName) {
 Load data from the various feature files:
 
 ```{r}
-titles <- readDataFileWithDOI('titles.csv')
-questionMarks <- readDataFileWithDOI('question_marks.csv')
+titles <- readDataFileWithDOI('altmetric/sample.csv')
+questionMarks <- readDataFileWithDOI('out/altmetric_sample_question_marks.csv')
 ```
 
 Go from publication date to an age in weeks, which is a bit easier to interpret:
 
 ```{r}
-titles$publication_date <- as.POSIXct(titles$publication_date)
-titles$age <- as.numeric(difftime(as.POSIXct('2014-09-25', tz='UTC'),
-                                  titles$publication_date,
-                                  units="weeks"))
+titles$pub_date <- as.POSIXct(titles$pub_date)
+titles$age_weeks <- as.numeric(difftime(as.POSIXct('2014-09-25', tz='UTC'),
+                                        titles$pub_date,
+                                        units="weeks"))
 ```
 
 Merge everything together on DOI:
@@ -50,12 +50,12 @@ data <- data[questionMarks]
 The simplest plot that could possibly work:
 
 ```{r, echo=FALSE}
-ggplot(data) + geom_point(aes(x=age, y=score, color=question_marks))
+ggplot(data) + geom_point(aes(x=age_weeks, y=score, color=question_marks))
 ```
 
 The simplest regression that could possibly work:
 
 ```{r}
-lmQuestionMarks <- lm(score ~ age + question_marks, data=data)
+lmQuestionMarks <- lm(score ~ age_weeks + question_marks, data=data)
 print(lmQuestionMarks)
 ```
