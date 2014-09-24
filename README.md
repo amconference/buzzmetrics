@@ -17,3 +17,4 @@ Stage 3: Analysis
 Stage 4: Regression
   * input: CSVs from stage 3
   * output: t.b.c
+    * Currently publishing to http://rpubs.com/jdleesmiller/30864
