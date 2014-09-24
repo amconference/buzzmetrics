@@ -5,6 +5,7 @@ require "bundler/gem_tasks"
 #
 # Example:
 #
+# mkdir -p ../../data/out/altmetric/sample
 # rake run[../../data/altmetric/sample.csv,../../data/out/altmetric/sample]
 #
 task :run, [:origin, :destin] do |t, args|
