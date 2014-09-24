@@ -27,8 +27,24 @@ readDataFileWithDOI <- function(fileName) {
 Load data from the various feature files:
 
 ```{r}
-titles <- readDataFileWithDOI('altmetric/sample.csv')
-questionMarks <- readDataFileWithDOI('out/altmetric_sample_question_marks.csv')
+dataStem <- file.path('altmetric','1d-2014-09-24');
+titles <- readDataFileWithDOI(paste0(dataStem, '.csv'))
+
+questionMarks <- readDataFileWithDOI(file.path(
+  'out', dataStem, 'question_marks.csv'))
+questionMarks$question_marks <- factor(questionMarks$question_marks)
+
+titleLengths <- readDataFileWithDOI(file.path(
+    'out', dataStem, 'title_lengths.csv'))
+titleLengths <- titleLengths[,c('doi','length'),with=FALSE]
+```
+
+Remove duplicate DOIs.
+
+```{r}
+titles <- titles[!duplicated(doi)]
+questionMarks <- questionMarks[!duplicated(doi)]
+titleLengths <- titleLengths[!duplicated(doi)]
 ```
 
 Go from publication date to an age in weeks, which is a bit easier to interpret:
@@ -45,17 +61,28 @@ Merge everything together on DOI:
 ```{r}
 data <- titles
 data <- data[questionMarks]
+data <- data[titleLengths]
 ```
 
-The simplest plot that could possibly work:
+Summary table:
+
+```{r}
+print(summary(data))
+```
+
+Some simple plots:
 
 ```{r, echo=FALSE}
-ggplot(data) + geom_point(aes(x=age_weeks, y=score, color=question_marks))
+ggplot(data) + geom_point(aes(x=age_weeks, y=log(score), color=question_marks))
+```
+
+```{r, echo=FALSE}
+ggplot(data) + geom_point(aes(x=age_weeks, y=log(score), color=length))
 ```
 
 The simplest regression that could possibly work:
 
 ```{r}
-lmQuestionMarks <- lm(score ~ age_weeks + question_marks, data=data)
-print(lmQuestionMarks)
+bigLm <- lm(score ~ age_weeks + question_marks + length, data=data)
+print(summary(bigLm))
 ```
