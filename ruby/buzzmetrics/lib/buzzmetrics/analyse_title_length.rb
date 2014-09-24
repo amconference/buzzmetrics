@@ -32,10 +32,10 @@ module Buzzmetrics
     csv_string
   end
 
-  def self.title_lengths_csv
-    csv_string = CSV.generate do |csv_out|
+  def self.title_lengths_csv(input_csv, output_path)
+    csv_string = CSV.open(output_path, "wb") do |csv_out|
        csv_out << ["doi", "title", "score", "length"]
-       citations.map do |citation|
+       CSV.parse(input_csv, headers: true).map do |citation|
          { title: citation["title"], score: citation["score"], title_length: citation["title"].size, doi: citation["doi"] }
       end.each do |entry|
          csv_out << [ entry[:doi], entry[:title], entry[:score], entry[:title_length] ]
