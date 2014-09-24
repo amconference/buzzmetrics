@@ -1,4 +1,4 @@
-doi,title,score
-http://dx.doi.org/10.1000/1,"Test Title 1",123
-http://dx.doi.org/10.1000/2,"Test Title 2: How about this?",492
-http://dx.doi.org/10.1000/3,"Test Title 3: An epic journey begins.",353
+doi,title,score,publication_date
+http://dx.doi.org/10.1000/1,"Test Title 1",123,2012-09-23T11:22:25Z
+http://dx.doi.org/10.1000/2,"Test Title 2: How about this?",492,2013-02-23T19:23:25Z
+http://dx.doi.org/10.1000/3,"Test Title 3: An epic journey begins.",353,2014-01-23T13:25:25Z

@@ -31,6 +31,15 @@ titles <- readDataFileWithDOI('titles.csv')
 questionMarks <- readDataFileWithDOI('question_marks.csv')
 ```
 
+Go from publication date to an age in weeks, which is a bit easier to interpret:
+
+```{r}
+titles$publication_date <- as.POSIXct(titles$publication_date)
+titles$age <- as.numeric(difftime(as.POSIXct('2014-09-25', tz='UTC'),
+                                  titles$publication_date,
+                                  units="weeks"))
+```
+
 Merge everything together on DOI:
 
 ```{r}
@@ -41,12 +50,12 @@ data <- data[questionMarks]
 The simplest plot that could possibly work:
 
 ```{r, echo=FALSE}
-ggplot(data) + geom_point(aes(x=1, y=score, color=question_marks))
+ggplot(data) + geom_point(aes(x=age, y=score, color=question_marks))
 ```
 
 The simplest regression that could possibly work:
 
 ```{r}
-lmQuestionMarks <- lm(score ~ question_marks, data=data)
+lmQuestionMarks <- lm(score ~ age + question_marks, data=data)
 print(lmQuestionMarks)
 ```
