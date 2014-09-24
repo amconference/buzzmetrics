@@ -66,9 +66,11 @@ module Buzzmetrics
       csv_out << ["doi", "median_word_length"]
       words_in_title(input_csv).each do |entry|
         sorted_sizes = entry[:words].map { |w| w.size }.sort
-        middle = sorted_sizes.size/2
-        median = sorted_sizes.size.even? ? ((sorted_sizes[middle] + sorted_sizes[middle-1]) / 2.0) : sorted_sizes[middle]
-        csv_out << [entry[:doi], median]
+        if sorted_sizes.size > 0
+          middle = sorted_sizes.size/2
+          median = sorted_sizes.size.even? ? ((sorted_sizes[middle] + sorted_sizes[middle-1]) / 2.0) : sorted_sizes[middle]
+          csv_out << [entry[:doi], median]
+        end
       end
     end
   end
